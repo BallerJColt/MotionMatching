@@ -18,9 +18,9 @@ MonoBehaviour:
   - 0.5
   - 0.75
   - 1
-  trackedBones: 0a0000001300000014000000
+  trackedBones: 050000000600000009000000
   ignoreTags:
-  - 
+  - DoNotUse
   - 
   - 
   - 
@@ -53,7 +53,7 @@ MonoBehaviour:
   - 
   - 
   favourTags:
-  - 
+  - PleaseUse
   - 
   - 
   - 

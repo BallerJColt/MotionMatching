@@ -1,0 +1,154 @@
+{
+  "BurstVersion": "e0b00619-b8b5-4f30-9444-eece5ebf929e",
+  "Assemblies": [
+    {
+      "FullName": "Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "FilePath": "C:\\Users\\Baller\\MotionMatching\\MotionMatching\\Library\\ScriptAssemblies\\Unity.Burst.dll",
+      "LastWriteTime": "2020-04-25T12:36:07.6322941Z"
+    },
+    {
+      "FullName": "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
+      "FilePath": "C:\\Program Files\\Unity\\Hub\\Editor\\2019.3.5f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\unityjit\\Facades\\netstandard.dll",
+      "LastWriteTime": "2020-03-05T13:37:58Z"
+    },
+    {
+      "FullName": "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+      "FilePath": "C:\\Program Files\\Unity\\Hub\\Editor\\2019.3.5f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\unityjit\\mscorlib.dll",
+      "LastWriteTime": "2020-03-05T13:37:58Z"
+    },
+    {
+      "FullName": "UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "FilePath": "C:\\Program Files\\Unity\\Hub\\Editor\\2019.3.5f1\\Editor\\Data\\Managed\\UnityEngine\\UnityEngine.CoreModule.dll",
+      "LastWriteTime": "2020-03-05T13:49:44Z"
+    },
+    {
+      "FullName": "Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "FilePath": "C:\\Users\\Baller\\MotionMatching\\MotionMatching\\Library\\ScriptAssemblies\\Assembly-CSharp.dll",
+      "LastWriteTime": "2020-04-30T07:58:06.4302987Z"
+    },
+    {
+      "FullName": "mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+      "FilePath": "C:\\Program Files\\Unity\\Hub\\Editor\\2019.3.5f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\unityjit\\mscorlib.dll",
+      "LastWriteTime": "2020-03-05T13:37:58Z"
+    },
+    {
+      "FullName": "Unity.Mathematics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "FilePath": "C:\\Users\\Baller\\MotionMatching\\MotionMatching\\Library\\ScriptAssemblies\\Unity.Mathematics.dll",
+      "LastWriteTime": "2020-04-25T12:36:09.0906216Z"
+    }
+  ],
+  "Functions": [
+    {
+      "FullName": "System.Int32 Unity.Burst.Intrinsics.X86::DoGetCSRTrampoline()",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "184ca4e2e1cfb9476728335342c73082",
+      "LinkName": "CDCA4A5193BE5947",
+      "AssemblyDependencyIndices": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Burst.Intrinsics.X86::DoSetCSRTrampoline(System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "f25b32031ab41a3bb3725895f40a0cd5",
+      "LinkName": "801E9A000BB37B05",
+      "AssemblyDependencyIndices": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/UnbanAllJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "66526b7fe1f66933fcb2663fd1e44854",
+      "LinkName": "48D194542C4F5477",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/PoseCostJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "22ebc1f255dd7b348d472e19dd36964d",
+      "LinkName": "341840350F96DFFF",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<MMSeparatedController/AnimationSelectionJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "0fb6238f4e06af5e4f1a8d031bd665d6",
+      "LinkName": "376E96E428392AA1",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/TagForBanJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "40cf7e6eed5886020287fd24e1d6aed8",
+      "LinkName": "6B08FD0746782BB0",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/TrajectoryCostJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "02ebb3d76aa137e3a94aaff9b8d9bbc1",
+      "LinkName": "A893AB7CB0FA894E",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<MMSeparatedController/SortTrajectoryJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "29ff5e51bf31a2f5f8db0a26db458717",
+      "LinkName": "BDAF95159DF1BA72",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        2
+      ]
+    },
+    {
+      "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/ErrorForNextFrameJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
+      "ModuleOptionsHash": 8794384452606821980,
+      "ModuleHash": "1f5eb3534beb66638a6066806a2f1a20",
+      "LinkName": "AAEC27CAE64E43DD",
+      "AssemblyDependencyIndices": [
+        3,
+        4,
+        5,
+        6,
+        1,
+        2
+      ]
+    }
+  ]
+}

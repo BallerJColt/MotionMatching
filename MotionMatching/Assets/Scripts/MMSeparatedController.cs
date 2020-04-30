@@ -35,6 +35,11 @@ public class MMSeparatedController : MonoBehaviour
     public int prevBanRange;
     public int nextBanRange;
     public int banSeconds;
+    public int lookAheadFrames = 10;
+    public float cumulativeErrorThreshold;
+    public float currentCumulativeError;
+    public int currentFrame;
+
     private void Awake()
     {
         trajPoints = poseData.config.trajectoryTimePoints.Count;
@@ -47,8 +52,8 @@ public class MMSeparatedController : MonoBehaviour
 
         trajCostCompareNativeArray = new NativeArray<float3>(2 * trajPoints, Allocator.Persistent);
         poseCostCompareNativeArray = new NativeArray<float3>(2 * boneCount, Allocator.Persistent);
-        
-        banArray = new NativeArray<int>(poseData.Length,Allocator.Persistent);
+
+        banArray = new NativeArray<int>(poseData.Length, Allocator.Persistent);
     }
 
     private void Start()
@@ -71,6 +76,7 @@ public class MMSeparatedController : MonoBehaviour
         AnimLookup toPlay = poseData.GetAnimationAtFrame(frame);
         animator.CrossFadeInFixedTime(toPlay.Value, crossFadeTime, 0, toPlay.Key / 30f);
         current = toPlay.Value;
+        currentFrame = frame;
     }
 
     private bool IsFrameTooClose(int frame, float threshold)
@@ -93,105 +99,161 @@ public class MMSeparatedController : MonoBehaviour
         {
             trajCostCompareNativeArray.CopyFrom(CreateFlatTrajectoryArray(2 * trajPoints));
 
-            NativeArray<float> trajResult = new NativeArray<float>(poseData.Length, Allocator.TempJob);
+            //Calculate cumulative trajectory error, if it's below threshold, just keep playing the current animation
+            NativeArray<float> errorResult = new NativeArray<float>(1, Allocator.TempJob);
 
-            UnbanAllJob unbanJob = new UnbanAllJob
+            //currentFrame = GetTrajectoryFrameFromAnimation();
+            // int lastFrameInClip =
+            //     Mathf.RoundToInt(animator.GetCurrentAnimatorStateInfo(0).length * poseData.config.frameRate);
+            // //int endFrame = Mathf.Min(currentFrame + (2 * trajPoints) * lookAheadFrames, lastFrameInClip);
+            // int endFrame = currentFrame + (2 * trajPoints) * lookAheadFrames;
+            // NativeSlice<float3> trajectorySlice =
+            //     new NativeSlice<float3>(trajectoryNativeArray, currentFrame, endFrame);
+            // CumulativeErrorJob errorJob = new CumulativeErrorJob
+            // {
+            //     predictedTrajectory = trajCostCompareNativeArray,
+            //     continuedMovementTrajectories = trajectorySlice,
+            //     trajectoryWeights = trajWeightNativeArray,
+            //     result = errorResult
+            // };
+
+            // BIG DEBUG STUFF
+
+            NativeSlice<float3> singleSlice =
+                new NativeSlice<float3>(trajectoryNativeArray, 8 * currentFrame, 8);
+            float dist = 0f;
+            var alma = predictor.PredictTrajectory();
+            float natDist = 0f;
+            for (int i = 0; i < 4; i++)
             {
-                banTagArray = banArray,
-                unbanLayer = unBanMask
-            };
-            NativeArray<int> tagm = new NativeArray<int>(poseData.Length, Allocator.TempJob);
-            TrajectoryCostJob trajJob = new TrajectoryCostJob
-            {
-                trajectoryFlatArray = trajectoryNativeArray,
-                predictedTrajectory = trajCostCompareNativeArray,
-                trajectoryWeights = trajWeightNativeArray,
-                banFrames = banArray,
-                banMask = unBanMask,
-                result = trajResult,
-                btm = tagm,
-            };
-
-          
-            
-
-            NativeArray<int> poseIndices = new NativeArray<int>(bestTrajectoryAmount, Allocator.TempJob);
-            SortTrajectoryJob sortJob = new SortTrajectoryJob
-            {
-                results = trajResult,
-                indices = poseIndices
-            };
-            
-            JobHandle trajHandle = trajJob.Schedule(trajResult.Length, 8);
-            JobHandle sortHandle = sortJob.Schedule(trajHandle);
-            sortHandle.Complete();
-            JobHandle unbanHandle = unbanJob.Schedule(banArray.Length, 32);
-            unbanHandle.Complete();
-            //if (animPhaseIndex % poseRefreshRate == 0)
-            //{
-            //    foreach (var alma in tagm)
-            //    {
-            //        Debug.Log("ban multip: " + alma);
-            //    }
-            //}
-
-            tagm.Dispose();
-            trajResult.Dispose();
-
-            NativeArray<float3> bestPoses = new NativeArray<float3>(BuildBestPoseArray(poseIndices),Allocator.TempJob);
-            poseCostCompareNativeArray.CopyFrom(CreateFlatPoseArray(2*boneCount));
-            NativeArray<float> poseResults = new NativeArray<float>(bestTrajectoryAmount,Allocator.TempJob);
-            
-            PoseCostJob poseJob = new PoseCostJob
-            {
-                bestPoseArray = bestPoses,
-                currentPose = poseCostCompareNativeArray,
-                poseWeights = poseWeightNativeArray,
-                result = poseResults
-            };
-            
-            NativeArray<int> bestIndexArr = new NativeArray<int>(1,Allocator.TempJob);
-            
-            AnimationSelectionJob animJob = new AnimationSelectionJob
-            {
-                indices = poseIndices,
-                results = poseResults,
-                selectedIndex = bestIndexArr
-            };
-
-            JobHandle poseHandle = poseJob.Schedule(poseResults.Length, 6);
-            JobHandle animHandle = animJob.Schedule(poseHandle);
-            animHandle.Complete();
-
-            poseIndices.Dispose();
-            poseResults.Dispose();
-            bestPoses.Dispose();
-
-            bestIndex = bestIndexArr[0];
-            
-            bestIndexArr.Dispose();
-            
-            var isBanned = IsFrameTooClose(bestIndex, banThreshold);
-            if (!isBanned)
-            {
-                PlayAtUniqueFrame(bestIndex);
-                
-                int[] banRange = poseData.GetStartAndLength(bestIndex, prevBanRange, nextBanRange);
-                //Debug.Log(banRange[0] + " - " + banRange[1]);
-                NativeSlice<int> banSlice = new NativeSlice<int>(banArray, banRange[0], banRange[1]);
-                TagForBanJob tagForBanJob = new TagForBanJob
-                {
-                    rangeToBan = banSlice,
-                    banLayer = unBanMask
-                };
-                JobHandle banHandle = tagForBanJob.Schedule(banSlice.Length, 32);
-                banHandle.Complete();
+                var point = alma.trajectoryPoints[i];
+                Debug.Log("predicted trajectory points: " + point);
+                Debug.Log("animation trajectory points" +
+                          poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
+                dist += Vector3.SqrMagnitude(alma.trajectoryPoints[i] -
+                                             poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
+                Debug.Log("predicted pos in nativearray: " + trajCostCompareNativeArray[i]);
+                Debug.Log("animation pos in nativearray: " + singleSlice[i]);
+                natDist += math.distancesq(trajCostCompareNativeArray[i], singleSlice[i]);
             }
 
-            animPhaseIndex++;
-            animPhaseIndex %= (banSeconds * poseRefreshRate);
-            unBanMask = (1 << animPhaseIndex);
+            Debug.Log("sqr distance: " + dist);
+            Debug.Log("native sq dist: " + natDist);
+
+            //TODO: Keep animation frames rolling, add look-ahead again!
             
+            ErrorForNextFrameJob singleFrameErrorJob = new ErrorForNextFrameJob
+            {
+                predictedTrajectory = trajCostCompareNativeArray,
+                continuedMovementTrajectories = singleSlice,
+                trajectoryWeights = trajWeightNativeArray,
+                result = errorResult,
+            };
+
+
+            JobHandle errorJobHandle = singleFrameErrorJob.Schedule(trajCostCompareNativeArray.Length, 8);
+            errorJobHandle.Complete();
+            currentCumulativeError = errorResult[0];
+            errorResult.Dispose();
+            Debug.Log("error in job: " + currentCumulativeError);
+            if (currentCumulativeError <= cumulativeErrorThreshold)
+            {
+                Debug.Log("We close!");
+            }
+            else
+            {
+                NativeArray<float> trajResult = new NativeArray<float>(poseData.Length, Allocator.TempJob);
+
+                UnbanAllJob unbanJob = new UnbanAllJob
+                {
+                    banTagArray = banArray,
+                    unbanLayer = unBanMask
+                };
+                NativeArray<int> tagm = new NativeArray<int>(poseData.Length, Allocator.TempJob);
+                TrajectoryCostJob trajJob = new TrajectoryCostJob
+                {
+                    trajectoryFlatArray = trajectoryNativeArray,
+                    predictedTrajectory = trajCostCompareNativeArray,
+                    trajectoryWeights = trajWeightNativeArray,
+                    banFrames = banArray,
+                    banMask = unBanMask,
+                    result = trajResult,
+                    btm = tagm,
+                };
+
+
+                NativeArray<int> poseIndices = new NativeArray<int>(bestTrajectoryAmount, Allocator.TempJob);
+                SortTrajectoryJob sortJob = new SortTrajectoryJob
+                {
+                    results = trajResult,
+                    indices = poseIndices
+                };
+
+                JobHandle trajHandle = trajJob.Schedule(trajResult.Length, 8);
+                JobHandle sortHandle = sortJob.Schedule(trajHandle);
+                sortHandle.Complete();
+                JobHandle unbanHandle = unbanJob.Schedule(banArray.Length, 32);
+                unbanHandle.Complete();
+
+                tagm.Dispose();
+                trajResult.Dispose();
+
+                NativeArray<float3> bestPoses =
+                    new NativeArray<float3>(BuildBestPoseArray(poseIndices), Allocator.TempJob);
+                poseCostCompareNativeArray.CopyFrom(CreateFlatPoseArray(2 * boneCount));
+                NativeArray<float> poseResults = new NativeArray<float>(bestTrajectoryAmount, Allocator.TempJob);
+
+                PoseCostJob poseJob = new PoseCostJob
+                {
+                    bestPoseArray = bestPoses,
+                    currentPose = poseCostCompareNativeArray,
+                    poseWeights = poseWeightNativeArray,
+                    result = poseResults
+                };
+
+                NativeArray<int> bestIndexArr = new NativeArray<int>(1, Allocator.TempJob);
+
+                AnimationSelectionJob animJob = new AnimationSelectionJob
+                {
+                    indices = poseIndices,
+                    results = poseResults,
+                    selectedIndex = bestIndexArr
+                };
+
+                JobHandle poseHandle = poseJob.Schedule(poseResults.Length, 6);
+                JobHandle animHandle = animJob.Schedule(poseHandle);
+                animHandle.Complete();
+
+                poseIndices.Dispose();
+                poseResults.Dispose();
+                bestPoses.Dispose();
+
+                bestIndex = bestIndexArr[0];
+
+                bestIndexArr.Dispose();
+
+                var isBanned = IsFrameTooClose(bestIndex, banThreshold);
+                if (!isBanned)
+                {
+                    PlayAtUniqueFrame(bestIndex);
+
+                    int[] banRange = poseData.GetStartAndLength(bestIndex, prevBanRange, nextBanRange);
+                    //Debug.Log(banRange[0] + " - " + banRange[1]);
+                    NativeSlice<int> banSlice = new NativeSlice<int>(banArray, banRange[0], banRange[1]);
+                    TagForBanJob tagForBanJob = new TagForBanJob
+                    {
+                        rangeToBan = banSlice,
+                        banLayer = unBanMask
+                    };
+                    JobHandle banHandle = tagForBanJob.Schedule(banSlice.Length, 32);
+                    banHandle.Complete();
+                }
+
+                animPhaseIndex++;
+                animPhaseIndex %= (banSeconds * poseRefreshRate);
+                unBanMask = (1 << animPhaseIndex);
+            }
+
             yield return new WaitForSeconds(1f / poseRefreshRate);
         }
     }
@@ -210,7 +272,7 @@ public class MMSeparatedController : MonoBehaviour
         public void Execute(int index)
         {
             int chunkLength = predictedTrajectory.Length;
-            
+
             int banTagMultiplier = ((banFrames[index] & banMask) >> 31) - (-(banFrames[index] & banMask) >> 31);
             btm[index] = banTagMultiplier;
 
@@ -405,68 +467,79 @@ public class MMSeparatedController : MonoBehaviour
             rangeToBan[index] |= banLayer;
         }
     }
-    
-    public int[] SortShit(NativeArray<float> results)
-    {
-        int[] indices = new int[bestTrajectoryAmount];
-        int k = 0;
-        for (int i = 0; i < results.Length; i++)
-        {
-            if (k < indices.Length - 1) //indices not full
-            {
-                if (results[i] >= results[indices[k]])
-                {
-                    //Debug.Log("array not full, placing " + results[i] + " at end of array");
-                    //current is higher than highest in sorted array
-                    //fill up array by concatenating index at end
-                    k++;
-                    //Debug.Log("array not full, replacing " + indices[k] + "with " + i);
-                    indices[k] = i;
-                }
-                else
-                {
-                    //fill up array by sorting stuff
-                    for (int j = k; j >= 0; j--)
-                    {
-                        if (results[i] < results[indices[j]])
-                        {
-                            indices[j + 1] = indices[j];
-                            indices[j] = i;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
 
-                    k++;
-                }
-            }
-            else
+    [BurstCompile]
+    public struct CumulativeErrorJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeSlice<float3> continuedMovementTrajectories;
+        [ReadOnly] public NativeArray<float3> predictedTrajectory;
+        [ReadOnly] public NativeArray<float> trajectoryWeights;
+        public NativeArray<float> result;
+
+        public void Execute(int index)
+        {
+            int chunkLength = predictedTrajectory.Length;
+            for (int j = 0; j < chunkLength; j++)
             {
-                if (results[i] < results[indices[k]])
-                {
-                    //Debug.Log("value " + results[i] + " lower than " + results[indices[k]]);
-                    //sort stuff
-                    for (int j = k - 1; j >= 0; j--)
-                    {
-                        if (results[i] < results[indices[j]])
-                        {
-                            indices[j + 1] = indices[j];
-                            indices[j] = i;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+                result[0] += math.distancesq(predictedTrajectory[j],
+                                 continuedMovementTrajectories[index * chunkLength + j]) *
+                             trajectoryWeights[j];
+            }
+        }
+    }
+
+    [BurstCompile]
+    public struct ErrorForNextFrameJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeSlice<float3> continuedMovementTrajectories;
+        [ReadOnly] public NativeArray<float3> predictedTrajectory;
+        [ReadOnly] public NativeArray<float> trajectoryWeights;
+        public NativeArray<float> result;
+
+        public void Execute(int index)
+        {
+            result[0] += math.distancesq(predictedTrajectory[index], continuedMovementTrajectories[index]) *
+                         trajectoryWeights[index];
+        }
+    }
+
+    private int GetCurrentAnimatorFrame()
+    {
+        var currentState = animator.GetCurrentAnimatorStateInfo(0);
+        int currentFrame =
+            Mathf.RoundToInt(currentState.length * currentState.normalizedTime * poseData.config.frameRate);
+        return currentFrame;
+    }
+
+    private int GetTrajectoryFrameFromAnimation()
+    {
+        int currentAnimFrame = GetCurrentAnimatorFrame();
+        int trajFrame = 0;
+
+        AnimatorClipInfo[] currentClips = animator.GetCurrentAnimatorClipInfo(0);
+        float highest = float.MinValue;
+        string clipName = "";
+        for (int i = 0; i < currentClips.Length; i++)
+        {
+            if (currentClips[i].weight > highest)
+            {
+                highest = currentClips[i].weight;
+                clipName = currentClips[i].clip.name;
             }
         }
 
-        return indices;
+        Debug.Log(currentClips.Length);
+        int j = 0;
+        while (j < poseData.satelliteData.Length && current != poseData.satelliteData[j].Value)
+        {
+            trajFrame += poseData.satelliteData[j].Key;
+            j++;
+        }
+
+        trajFrame += currentAnimFrame;
+        return trajFrame;
     }
-    
+
     private void OnDrawGizmos()
     {
         for (var i = 0; i < poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints.Length; i++)

@@ -2,19 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using KinematicCharacterController;
-using KinematicTest.controller;
+using KinematicCharacterController.Examples;
 using UnityEngine;
 
 public class KinematicTrajectoryPredictor : MotionMatchable
 {
-    private int MaxDiscreteCollisionIterations = 3;
     private Collider[] _probedColliders = new Collider[8];
     public KinematicCharacterMotor motor;
-    public KinematicTestController controller;
+    public ExampleCharacterController controller;
     public Animator animator;
     public MMConfig config;
     public bool showGizmos;
-    public Transform meshRoot;
+    public Transform meshRoot; //it's just the root node of KCC.
     public Transform rootJoint;
     public Vector3[] trajectoryPoints;
     public Vector3[] trajectoryForwards;
@@ -108,11 +107,10 @@ public class KinematicTrajectoryPredictor : MotionMatchable
     
     private Vector3 ExplicitEuler(float deltaTime)
     {
-        Vector3 grav = controller.Gravity;
         Vector3 velocity = motor.BaseVelocity;
-        if (!motor.GroundingStatus.IsStableOnGround && !motor.GroundingStatus.FoundAnyGround ||
-            controller.JumpingThisFrame())
-            velocity = velocity + grav * deltaTime;
+        /*Vector3 grav = controller.Gravity;
+        if (!motor.GroundingStatus.IsStableOnGround && !motor.GroundingStatus.FoundAnyGround)
+            velocity = velocity + grav * deltaTime;*/
 
 
         Vector3 position = meshRoot.position;
@@ -151,7 +149,7 @@ public class KinematicTrajectoryPredictor : MotionMatchable
             }
 
 
-            if (animator == null || velocities == null)
+            if (animator == null || velocities.Length <= 0)
                 return;
 
             for (int i = 0; i < config.trackedBones.Count; i++)
@@ -161,7 +159,7 @@ public class KinematicTrajectoryPredictor : MotionMatchable
                 Gizmos.DrawRay(animator.GetBoneTransform(bone).position, velocities[i]);
                 Gizmos.color = Color.white;
                 Gizmos.DrawLine(Vector3.zero,
-                    rootJoint.worldToLocalMatrix.MultiplyPoint3x4(animator.GetBoneTransform(bone).position));
+                    meshRoot.worldToLocalMatrix.MultiplyPoint3x4(animator.GetBoneTransform(bone).position)); //I had to use "meshroot" here which is actually just the root node of KCCm
             }
         }
     }
