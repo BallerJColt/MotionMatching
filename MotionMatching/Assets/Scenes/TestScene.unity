@@ -752,10 +752,11 @@ MonoBehaviour:
   prevBanRange: 20
   nextBanRange: 20
   banSeconds: 5
-  lookAheadFrames: 0
+  lookAheadFrames: 10
   cumulativeErrorThreshold: 1
   currentCumulativeError: 0
   currentFrame: 0
+  realCurrentFrame: 0
 --- !u!114 &2045287606
 MonoBehaviour:
   m_ObjectHideFlags: 0

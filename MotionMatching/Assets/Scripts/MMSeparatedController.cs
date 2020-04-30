@@ -39,7 +39,7 @@ public class MMSeparatedController : MonoBehaviour
     public float cumulativeErrorThreshold;
     public float currentCumulativeError;
     public int currentFrame;
-
+    public int realCurrentFrame;
     private void Awake()
     {
         trajPoints = poseData.config.trajectoryTimePoints.Count;
@@ -61,6 +61,13 @@ public class MMSeparatedController : MonoBehaviour
         StartMotionMatching();
     }
 
+    /*private void FixedUpdate()
+    {
+        
+        Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName(current));
+        realCurrentFrame = GetTrajectoryFrame();
+    }*/
+
     private void OnDisable()
     {
         trajectoryNativeArray.Dispose();
@@ -77,6 +84,7 @@ public class MMSeparatedController : MonoBehaviour
         animator.CrossFadeInFixedTime(toPlay.Value, crossFadeTime, 0, toPlay.Key / 30f);
         current = toPlay.Value;
         currentFrame = frame;
+        realCurrentFrame = frame;
     }
 
     private bool IsFrameTooClose(int frame, float threshold)
@@ -98,7 +106,7 @@ public class MMSeparatedController : MonoBehaviour
         while (true)
         {
             trajCostCompareNativeArray.CopyFrom(CreateFlatTrajectoryArray(2 * trajPoints));
-
+            realCurrentFrame = Mathf.Clamp(realCurrentFrame+3,0,poseData.Length-lookAheadFrames-1);
             //Calculate cumulative trajectory error, if it's below threshold, just keep playing the current animation
             NativeArray<float> errorResult = new NativeArray<float>(1, Allocator.TempJob);
 
@@ -120,7 +128,7 @@ public class MMSeparatedController : MonoBehaviour
             // BIG DEBUG STUFF
 
             NativeSlice<float3> singleSlice =
-                new NativeSlice<float3>(trajectoryNativeArray, 8 * currentFrame, 8);
+                new NativeSlice<float3>(trajectoryNativeArray, 8 * (realCurrentFrame+lookAheadFrames), 8);
             float dist = 0f;
             var alma = predictor.PredictTrajectory();
             float natDist = 0f;
@@ -129,9 +137,9 @@ public class MMSeparatedController : MonoBehaviour
                 var point = alma.trajectoryPoints[i];
                 Debug.Log("predicted trajectory points: " + point);
                 Debug.Log("animation trajectory points" +
-                          poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
+                          poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
                 dist += Vector3.SqrMagnitude(alma.trajectoryPoints[i] -
-                                             poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
+                                             poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
                 Debug.Log("predicted pos in nativearray: " + trajCostCompareNativeArray[i]);
                 Debug.Log("animation pos in nativearray: " + singleSlice[i]);
                 natDist += math.distancesq(trajCostCompareNativeArray[i], singleSlice[i]);
@@ -140,7 +148,7 @@ public class MMSeparatedController : MonoBehaviour
             Debug.Log("sqr distance: " + dist);
             Debug.Log("native sq dist: " + natDist);
 
-            //TODO: Keep animation frames rolling, add look-ahead again!
+            //Keep animation frames rolling, add look-ahead again!
             
             ErrorForNextFrameJob singleFrameErrorJob = new ErrorForNextFrameJob
             {
@@ -538,6 +546,25 @@ public class MMSeparatedController : MonoBehaviour
 
         trajFrame += currentAnimFrame;
         return trajFrame;
+    }
+
+    private int GetTrajectoryFrame()
+    {
+        AnimLookup[] satData = poseData.satelliteData;
+        int frameCount = 0;
+        for (int i = 0; i < satData.Length; i++)
+        {
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName(satData[i].Value))
+            {
+                Debug.Log("current animation playing is " + satData[i].Value);
+                break;
+            }
+
+            frameCount += satData[i].Key;
+        }
+
+        frameCount += GetCurrentAnimatorFrame();
+        return frameCount;
     }
 
     private void OnDrawGizmos()
