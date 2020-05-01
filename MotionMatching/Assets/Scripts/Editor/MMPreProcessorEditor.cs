@@ -17,9 +17,7 @@ public class CustomScriptableObjectEditor : Editor
         AnimationClip myClip = mmPreProcessor.clip;
         if (GUILayout.Button("Preprocess"))
         {
-            //Debug.Log("Amount of clips : " + mmPreProcessor.name);
             mmPreProcessor.PreProcess();
-            //AssetDatabase.GetAssetPath();
         }
 
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f59208ed67fc6d40bd33778e9ef1e25, type: 3}
   m_Name: NewMMPreProcessor
   m_EditorClassIdentifier: 
-  ignoreTags: 0
+  ignoreTags: 1
   config: {fileID: 11400000, guid: a0d9bfe78299fa041a96d37aa5f94055, type: 2}
   mmAvatar: {fileID: -927199367670048503, guid: 320b1c2af77554f99a1658df4a6d3d5c,
     type: 3}
@@ -20,7 +20,11 @@ MonoBehaviour:
     type: 3}
   clip: {fileID: 0}
   mmAnimationClips:
-  - {fileID: 11400000, guid: 55e708d64dce0b349be6ca4cf8269231, type: 2}
-  - {fileID: 11400000, guid: 2dfc8325c96d66d4f91c3531b4325744, type: 2}
-  - {fileID: 11400000, guid: afeb9263921ecc44b8a3b7f8ed3decc3, type: 2}
-  - {fileID: 11400000, guid: cb713792ba0519541b9992336f412989, type: 2}
+  - {fileID: 11400000, guid: 52f5bc3fd5b5c8a40a415bc928fe31fe, type: 2}
+  - {fileID: 11400000, guid: c9bc00a5e3d4347418fe1626058016ab, type: 2}
+  - {fileID: 11400000, guid: 3e1f87af2260ea64f83379eee604f7ff, type: 2}
+  - {fileID: 11400000, guid: 82f6027fea622c94dbcc1330c1a9066c, type: 2}
+  - {fileID: 11400000, guid: 3062b72f89a7b3e4b87a75365f2116d9, type: 2}
+  - {fileID: 11400000, guid: 416d75c5aecaa6540a5d7f0bb169dab9, type: 2}
+  - {fileID: 11400000, guid: c5e313acbca74564cb9a83e96024f137, type: 2}
+  - {fileID: 11400000, guid: 3b64bbb12b7863d4abbfe7076f1b9617, type: 2}

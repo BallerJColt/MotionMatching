@@ -721,7 +721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c578be345e3ad640849ea5759861703, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poseData: {fileID: 11400000, guid: 246b82d3adcc7e34e8ccbf3fa4a8326b, type: 2}
+  poseData: {fileID: 11400000, guid: e6906cc2c96c7ec4fa5088d8f519d018, type: 2}
   predictor: {fileID: 2045287604}
   animator: {fileID: 418494097}
   poseRefreshRate: 5
@@ -734,10 +734,10 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  - 0
-  - 0
-  - 0
-  - 0
+  - 1
+  - 1
+  - 1
+  - 1
   poseWeights:
   - 0
   - 0
@@ -751,12 +751,14 @@ MonoBehaviour:
   unBanMask: 0
   prevBanRange: 20
   nextBanRange: 20
-  banSeconds: 5
-  lookAheadFrames: 10
-  cumulativeErrorThreshold: 1
+  banSeconds: 3
+  lookAheadFrames: 14
+  cumulativeErrorThreshold: 0.5
   currentCumulativeError: 0
   currentFrame: 0
   realCurrentFrame: 0
+  showBestTrajectory: 0
+  showLookAheadTrajectory: 1
 --- !u!114 &2045287606
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -40,6 +40,8 @@ public class MMSeparatedController : MonoBehaviour
     public float currentCumulativeError;
     public int currentFrame;
     public int realCurrentFrame;
+    public bool showBestTrajectory;
+    public bool showLookAheadTrajectory;
     private void Awake()
     {
         trajPoints = poseData.config.trajectoryTimePoints.Count;
@@ -140,9 +142,13 @@ public class MMSeparatedController : MonoBehaviour
                           poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
                 dist += Vector3.SqrMagnitude(alma.trajectoryPoints[i] -
                                              poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
+                dist += Vector3.SqrMagnitude(alma.trajectoryForwards[i] -
+                                             poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryForwards[i]);
                 Debug.Log("predicted pos in nativearray: " + trajCostCompareNativeArray[i]);
                 Debug.Log("animation pos in nativearray: " + singleSlice[i]);
                 natDist += math.distancesq(trajCostCompareNativeArray[i], singleSlice[i]);
+                natDist += math.distancesq(trajCostCompareNativeArray[4+i], singleSlice[4+i]);
+                
             }
 
             Debug.Log("sqr distance: " + dist);
@@ -167,6 +173,13 @@ public class MMSeparatedController : MonoBehaviour
             if (currentCumulativeError <= cumulativeErrorThreshold)
             {
                 Debug.Log("We close!");
+                UnbanAllJob unbanJob = new UnbanAllJob
+                {
+                    banTagArray = banArray,
+                    unbanLayer = unBanMask
+                };
+                JobHandle unbanHandle = unbanJob.Schedule(banArray.Length, 32);
+                unbanHandle.Complete();
             }
             else
             {
@@ -569,13 +582,30 @@ public class MMSeparatedController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        for (var i = 0; i < poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints.Length; i++)
+
+        if (showBestTrajectory)
         {
-            var position = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints[i];
-            var fwd = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryForwards[i];
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(Vector3.zero + position, 1f / 10);
-            DrawArrow(Vector3.zero + position, fwd, 1f);
+            for (var i = 0; i < poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints.Length; i++)
+            {
+                var position = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints[i];
+                var fwd = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryForwards[i];
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(Vector3.zero + position, 1f / 10);
+                DrawArrow(Vector3.zero + position, fwd, 1f);
+            }
+        }
+
+        if (showLookAheadTrajectory)
+        {
+
+            for (var i = 0; i < poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints.Length; i++)
+            {
+                var position = poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints[i];
+                var fwd = poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryForwards[i];
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawWireSphere(Vector3.zero + position, 1f / 10);
+                DrawArrow(Vector3.zero + position, fwd, 1f);
+            }
         }
     }
 

@@ -97,10 +97,14 @@ public class KinematicTrajectoryPredictor : MotionMatchable
 
     private void GenerateTrajectoryForwards()
     {
-        trajectoryForwards[0] = (trajectoryPoints[0] - meshRoot.position).normalized;
+        /*trajectoryForwards[0] = (trajectoryPoints[0] - meshRoot.position).normalized;
         for (int i = 1; i < trajectoryPoints.Length; i++)
         {
             trajectoryForwards[i] = (trajectoryPoints[i] - trajectoryPoints[i - 1]).normalized;
+        }*/
+        for (int i = 0; i < trajectoryPoints.Length; i++)
+        {
+            trajectoryForwards[i] = meshRoot.forward;
         }
     }
 

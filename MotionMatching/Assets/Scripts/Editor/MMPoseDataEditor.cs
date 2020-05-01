@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-//[CustomEditor(typeof(MMMotionData))]
+[CustomEditor(typeof(MMMotionData))]
 public class MMPoseDataEditor : Editor
 {
     public override void OnInspectorGUI()
@@ -32,5 +32,6 @@ public class MMPoseDataEditor : Editor
         
         GUILayout.Space(10f);
         GUILayout.Label("Poses: " + motionData.Length);
+        EditorUtility.SetDirty(motionData);
     }
 }

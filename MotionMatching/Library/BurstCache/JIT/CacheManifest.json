@@ -24,7 +24,7 @@
     {
       "FullName": "Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "C:\\Users\\Baller\\MotionMatching\\MotionMatching\\Library\\ScriptAssemblies\\Assembly-CSharp.dll",
-      "LastWriteTime": "2020-04-30T12:26:26.8163897Z"
+      "LastWriteTime": "2020-05-01T10:10:15.2262179Z"
     },
     {
       "FullName": "mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -63,7 +63,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/UnbanAllJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "2eeb4de09145ea9052a1aac541a09055",
+      "ModuleHash": "e07acb9229201c4c291cd5310919de00",
       "LinkName": "48D194542C4F5477",
       "AssemblyDependencyIndices": [
         3,
@@ -75,7 +75,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/PoseCostJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "defcfad349a8f52edf347df7685a107c",
+      "ModuleHash": "35b531d15bb1e22cdeb35aab5fc58a5d",
       "LinkName": "341840350F96DFFF",
       "AssemblyDependencyIndices": [
         3,
@@ -89,7 +89,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<MMSeparatedController/AnimationSelectionJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "e5a7335ea9287bafc3d087ebef457095",
+      "ModuleHash": "b9002d1ec41ea8e596c56764ea3a30cc",
       "LinkName": "376E96E428392AA1",
       "AssemblyDependencyIndices": [
         3,
@@ -101,7 +101,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/TagForBanJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "f38f9dc270deb805d6482fbb2ac6c219",
+      "ModuleHash": "96a09f52fbc5beae54a8bb8b1126f21a",
       "LinkName": "6B08FD0746782BB0",
       "AssemblyDependencyIndices": [
         3,
@@ -113,7 +113,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/TrajectoryCostJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "9533ed4d71e33139b82c467d45d76ba6",
+      "ModuleHash": "c85a530225ec5cac0e7616619bb922ba",
       "LinkName": "A893AB7CB0FA894E",
       "AssemblyDependencyIndices": [
         3,
@@ -127,7 +127,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<MMSeparatedController/SortTrajectoryJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "c84d54b75111bc4b6cc64cac938917df",
+      "ModuleHash": "6b5c5cd5bc35c983d591129a4beba2ec",
       "LinkName": "BDAF95159DF1BA72",
       "AssemblyDependencyIndices": [
         3,
@@ -139,7 +139,7 @@
     {
       "FullName": "System.Void Unity.Jobs.IJobParallelForExtensions/ParallelForJobStruct`1<MMSeparatedController/ErrorForNextFrameJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 8794384452606821980,
-      "ModuleHash": "83b70b5ba93514d5e72adbf11265dcc5",
+      "ModuleHash": "c8cd3756907569f0c7ce58ba3b1e65e3",
       "LinkName": "AAEC27CAE64E43DD",
       "AssemblyDependencyIndices": [
         3,

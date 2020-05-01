@@ -13,5 +13,6 @@ public class MMAnimClipEditor : Editor
         GUILayout.Label("Clip name: " + mmClip.animClip.name);
         GUILayout.Label("Animation Length: " + mmClip.animClip.length + "s");
         GUILayout.Label("Processed frames: " + mmClip.Length);
+        EditorUtility.SetDirty(mmClip);
     }
 }
