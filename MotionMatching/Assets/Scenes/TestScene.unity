@@ -563,7 +563,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1879226494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,17 +576,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84c5ae4f81e8e0418abd32ada5c372b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mmAnimClip: {fileID: 0}
-  motionData: {fileID: 0}
+  mmAnimClip: {fileID: 11400000, guid: c9bc00a5e3d4347418fe1626058016ab, type: 2}
+  motionData: {fileID: 11400000, guid: e6906cc2c96c7ec4fa5088d8f519d018, type: 2}
   step: 10
   arrowLength: 1
-  showTrajectory: 1
-  showSkeleton: 0
-  showJointVelocities: 0
+  showTrajectory: 0
+  showSkeleton: 1
+  showJointVelocities: 1
   showLocalTrajectory: 1
-  showCharSpaceSkeleton: 0
-  showCharSpaceVelocities: 0
-  charSpaceFrame: 231
+  showCharSpaceSkeleton: 1
+  showCharSpaceVelocities: 1
+  charSpaceFrame: 476
   showJointPositionCluster: 0
 --- !u!4 &1879226495
 Transform:
@@ -596,7 +596,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1879226493}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0939282e-33, y: 0.5314154, z: 0.017564926}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -755,10 +755,8 @@ MonoBehaviour:
   lookAheadFrames: 14
   cumulativeErrorThreshold: 0.5
   currentCumulativeError: 0
-  currentFrame: 0
-  realCurrentFrame: 0
   showBestTrajectory: 0
-  showLookAheadTrajectory: 1
+  showLookAheadTrajectory: 0
 --- !u!114 &2045287606
 MonoBehaviour:
   m_ObjectHideFlags: 0

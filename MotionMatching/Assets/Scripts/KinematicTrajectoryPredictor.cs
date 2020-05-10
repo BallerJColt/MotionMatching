@@ -148,8 +148,8 @@ public class KinematicTrajectoryPredictor : MotionMatchable
             {
                 var v = trajectoryPoints[i];
                 var fwd = trajectoryForwards[i];
-                Gizmos.DrawWireSphere(v, 0.2f);
-                DrawArrow(v, fwd, 1);
+                Gizmos.DrawWireSphere(Quaternion.LookRotation(transform.forward)*v + transform.position, 0.2f);
+                DrawArrow(Quaternion.LookRotation(transform.forward)*v+transform.position,Quaternion.LookRotation(transform.forward)*fwd , 1);
             }
 
 
@@ -159,11 +159,11 @@ public class KinematicTrajectoryPredictor : MotionMatchable
             for (int i = 0; i < config.trackedBones.Count; i++)
             {
                 var bone = config.trackedBones[i];
-                Gizmos.color = Color.magenta;
+                Gizmos.color = Color.yellow;
                 Gizmos.DrawRay(animator.GetBoneTransform(bone).position, velocities[i]);
                 Gizmos.color = Color.white;
-                Gizmos.DrawLine(Vector3.zero,
-                    meshRoot.worldToLocalMatrix.MultiplyPoint3x4(animator.GetBoneTransform(bone).position)); //I had to use "meshroot" here which is actually just the root node of KCCm
+                Gizmos.DrawLine(transform.position,
+                    Quaternion.LookRotation(transform.forward)* meshRoot.worldToLocalMatrix.MultiplyPoint3x4(animator.GetBoneTransform(bone).position) + transform.position); //I had to use "meshroot" here which is actually just the root node of KCCm
             }
         }
     }

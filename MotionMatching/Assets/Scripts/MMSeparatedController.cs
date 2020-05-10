@@ -38,8 +38,7 @@ public class MMSeparatedController : MonoBehaviour
     public int lookAheadFrames = 10;
     public float cumulativeErrorThreshold;
     public float currentCumulativeError;
-    public int currentFrame;
-    public int realCurrentFrame;
+    private int currentFrame;
     public bool showBestTrajectory;
     public bool showLookAheadTrajectory;
     private void Awake()
@@ -86,7 +85,6 @@ public class MMSeparatedController : MonoBehaviour
         animator.CrossFadeInFixedTime(toPlay.Value, crossFadeTime, 0, toPlay.Key / 30f);
         current = toPlay.Value;
         currentFrame = frame;
-        realCurrentFrame = frame;
     }
 
     private bool IsFrameTooClose(int frame, float threshold)
@@ -108,7 +106,7 @@ public class MMSeparatedController : MonoBehaviour
         while (true)
         {
             trajCostCompareNativeArray.CopyFrom(CreateFlatTrajectoryArray(2 * trajPoints));
-            realCurrentFrame = Mathf.Clamp(realCurrentFrame+3,0,poseData.Length-lookAheadFrames-1);
+            currentFrame = Mathf.Clamp(currentFrame+3,0,poseData.Length-lookAheadFrames-1);
             //Calculate cumulative trajectory error, if it's below threshold, just keep playing the current animation
             NativeArray<float> errorResult = new NativeArray<float>(1, Allocator.TempJob);
 
@@ -130,20 +128,20 @@ public class MMSeparatedController : MonoBehaviour
             // BIG DEBUG STUFF
 
             NativeSlice<float3> singleSlice =
-                new NativeSlice<float3>(trajectoryNativeArray, 8 * (realCurrentFrame+lookAheadFrames), 8);
+                new NativeSlice<float3>(trajectoryNativeArray, 8 * (currentFrame+lookAheadFrames), 8);
             float dist = 0f;
             var alma = predictor.PredictTrajectory();
             float natDist = 0f;
-            for (int i = 0; i < 4; i++)
+            /*for (int i = 0; i < 4; i++)
             {
                 var point = alma.trajectoryPoints[i];
                 Debug.Log("predicted trajectory points: " + point);
                 Debug.Log("animation trajectory points" +
-                          poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
+                          poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
                 dist += Vector3.SqrMagnitude(alma.trajectoryPoints[i] -
-                                             poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryPoints[i]);
+                                             poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryPoints[i]);
                 dist += Vector3.SqrMagnitude(alma.trajectoryForwards[i] -
-                                             poseData.frameInfo[realCurrentFrame].trajectoryInfo.trajectoryForwards[i]);
+                                             poseData.frameInfo[currentFrame].trajectoryInfo.trajectoryForwards[i]);
                 Debug.Log("predicted pos in nativearray: " + trajCostCompareNativeArray[i]);
                 Debug.Log("animation pos in nativearray: " + singleSlice[i]);
                 natDist += math.distancesq(trajCostCompareNativeArray[i], singleSlice[i]);
@@ -152,7 +150,7 @@ public class MMSeparatedController : MonoBehaviour
             }
 
             Debug.Log("sqr distance: " + dist);
-            Debug.Log("native sq dist: " + natDist);
+            Debug.Log("native sq dist: " + natDist);*/
 
             //Keep animation frames rolling, add look-ahead again!
             
@@ -169,10 +167,10 @@ public class MMSeparatedController : MonoBehaviour
             errorJobHandle.Complete();
             currentCumulativeError = errorResult[0];
             errorResult.Dispose();
-            Debug.Log("error in job: " + currentCumulativeError);
+            //Debug.Log("error in job: " + currentCumulativeError);
             if (currentCumulativeError <= cumulativeErrorThreshold)
             {
-                Debug.Log("We close!");
+                //Debug.Log("We close!");
                 UnbanAllJob unbanJob = new UnbanAllJob
                 {
                     banTagArray = banArray,
@@ -590,21 +588,21 @@ public class MMSeparatedController : MonoBehaviour
                 var position = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryPoints[i];
                 var fwd = poseData.frameInfo[bestIndex].trajectoryInfo.trajectoryForwards[i];
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(Vector3.zero + position, 1f / 10);
-                DrawArrow(Vector3.zero + position, fwd, 1f);
+                Gizmos.DrawWireSphere(Quaternion.LookRotation(transform.forward)* position + transform.position, 1f / 10);
+                DrawArrow(Quaternion.LookRotation(transform.forward)* position + transform.position, Quaternion.LookRotation(transform.forward)*fwd, 1f);
             }
         }
 
         if (showLookAheadTrajectory)
         {
 
-            for (var i = 0; i < poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints.Length; i++)
+            for (var i = 0; i < poseData.frameInfo[currentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints.Length; i++)
             {
-                var position = poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints[i];
-                var fwd = poseData.frameInfo[realCurrentFrame+lookAheadFrames].trajectoryInfo.trajectoryForwards[i];
+                var position = poseData.frameInfo[currentFrame+lookAheadFrames].trajectoryInfo.trajectoryPoints[i];
+                var fwd = poseData.frameInfo[currentFrame+lookAheadFrames].trajectoryInfo.trajectoryForwards[i];
                 Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(Vector3.zero + position, 1f / 10);
-                DrawArrow(Vector3.zero + position, fwd, 1f);
+                Gizmos.DrawWireSphere(Quaternion.LookRotation(transform.forward)* position + transform.position, 1f / 10);
+                DrawArrow(Quaternion.LookRotation(transform.forward)* position + transform.position, Quaternion.LookRotation(transform.forward)*fwd, 1f);
             }
         }
     }
